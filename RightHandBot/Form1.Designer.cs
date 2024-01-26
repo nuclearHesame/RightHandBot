@@ -65,6 +65,7 @@
             btnStop.TabIndex = 2;
             btnStop.Text = "Stop";
             btnStop.UseVisualStyleBackColor = true;
+            btnStop.Click += btnStop_Click;
             // 
             // toolStrip1
             // 
@@ -98,6 +99,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
             Text = "Right Hand";
+            FormClosing += Form1_FormClosing;
             Load += Form1_Load;
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
