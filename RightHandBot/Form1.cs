@@ -1,4 +1,6 @@
 using RightHandBot.Models;
+using RightHandBot.SettingJson;
+using Telegram.Bot;
 
 namespace RightHandBot
 {
@@ -9,9 +11,25 @@ namespace RightHandBot
             InitializeComponent();
         }
 
+        private static string BotToken;
+        private Thread BotThread;
+        private TelegramBotClient Bot;
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            Settings settings = Serializer.ReadSettingJson();
+
+            cmxToken.DataSource = settings.Bots.Select(bot => bot.APIToken).ToList();
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
             
+        }
+
+        void runBot()
+        {
+
         }
     }
 }
