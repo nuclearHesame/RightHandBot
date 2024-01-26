@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RightHandBot.Models;
 
-namespace tdic.SettingJson
+namespace RightHandBot.SettingJson
 {
     public static class Serializer
     {

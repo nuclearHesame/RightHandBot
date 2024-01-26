@@ -39,6 +39,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
             Text = "Right Hand";
+            Load += Form1_Load;
             ResumeLayout(false);
         }
 
