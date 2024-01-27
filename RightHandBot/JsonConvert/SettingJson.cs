@@ -1,15 +1,15 @@
 ﻿using Newtonsoft.Json;
 using RightHandBot.Models;
 
-namespace RightHandBot.SettingJson
+namespace RightHandBot.JsonSerializer
 {
     public static class Serializer
     {
-        public static void WriteSettingJson(Settings settingItem)
+        public static void WriteJson(object values)
         {
-            string jsonFileName = "Settings.json";
+            string jsonFileName = values.GetType().Name + ".json";
 
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(settingItem);
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(values);
 
             using (var fileStream = new FileStream(jsonFileName, FileMode.Create))
             using (var streamWriter = new StreamWriter(fileStream))
@@ -19,9 +19,10 @@ namespace RightHandBot.SettingJson
             }
         }
 
-        public static Settings ReadSettingJson()
+        public static object ReadJson(string type)
         {
-            string jsonFileName = "Settings.json";
+            string jsonFileName = type + ".json";
+
 
             string jsonText = File.ReadAllText(jsonFileName);
             Settings loadedSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<Settings>(jsonText);

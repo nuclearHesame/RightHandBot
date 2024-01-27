@@ -1,7 +1,6 @@
 using RightHandBot.Models;
-using RightHandBot.SettingJson;
+using RightHandBot.JsonSerializer;
 using System.Text;
-using System.Windows.Forms;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -22,10 +21,10 @@ namespace RightHandBot
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            settings = Serializer.ReadSettingJson();
+            settings = (Settings) Serializer.ReadJson("Settings");
 
             cmxToken.Items.AddRange(settings.Bots.Select(bot => bot.APIToken).ToArray());
-            ltxChatMemberShip.Items.AddRange(settings.Memberships.ToArray()); 
+            ltxChatMemberShip.Items.AddRange(settings.Memberships.ToArray());
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -66,7 +65,7 @@ namespace RightHandBot
                     BotName = botName,
                 });
 
-                Serializer.WriteSettingJson(settings);
+                Serializer.WriteJson(settings);
             }
         }
 
@@ -180,11 +179,11 @@ namespace RightHandBot
             {
                 if (chatUsername.StartsWith("@"))
                 {
-                    txtChat.Text = "";
+                    txtChat.Text = "@";
                     settings.Memberships.Add(chatUsername);
                     ltxChatMemberShip.Items.Add(chatUsername);
 
-                    Serializer.WriteSettingJson(settings);
+                    Serializer.WriteJson(settings);
                 }
                 else
                 {
@@ -199,7 +198,7 @@ namespace RightHandBot
 
         private void btnDeleteChat_Click(object sender, EventArgs e)
         {
-            if(ltxChatMemberShip.SelectedItem != null)
+            if (ltxChatMemberShip.SelectedItem != null)
             {
                 string? selectedItem = ltxChatMemberShip.SelectedItem.ToString();
 
@@ -208,7 +207,7 @@ namespace RightHandBot
                     settings.Memberships.Remove(selectedItem);
                     ltxChatMemberShip.Items.Remove(selectedItem);
 
-                    Serializer.WriteSettingJson(settings);
+                    Serializer.WriteJson(settings);
                 }
             }
             else
