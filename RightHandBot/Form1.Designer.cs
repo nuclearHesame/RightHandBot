@@ -39,8 +39,14 @@
             txtChat = new TextBox();
             btnDeleteChat = new Button();
             btnAddChat = new Button();
+            groupBox2 = new GroupBox();
+            txtHashtag = new TextBox();
+            ltxHashtags = new ListBox();
+            btnDeleteHashtag = new Button();
+            btnAddHashtag = new Button();
             toolStrip1.SuspendLayout();
             groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
             SuspendLayout();
             // 
             // cmxToken
@@ -78,7 +84,7 @@
             toolStrip1.Dock = DockStyle.Bottom;
             toolStrip1.ImageScalingSize = new Size(20, 20);
             toolStrip1.Items.AddRange(new ToolStripItem[] { lblStatus });
-            toolStrip1.Location = new Point(0, 339);
+            toolStrip1.Location = new Point(0, 408);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(785, 25);
             toolStrip1.TabIndex = 3;
@@ -144,11 +150,64 @@
             btnAddChat.UseVisualStyleBackColor = true;
             btnAddChat.Click += btnAddChat_Click;
             // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(txtHashtag);
+            groupBox2.Controls.Add(ltxHashtags);
+            groupBox2.Controls.Add(btnDeleteHashtag);
+            groupBox2.Controls.Add(btnAddHashtag);
+            groupBox2.Location = new Point(230, 46);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(212, 210);
+            groupBox2.TabIndex = 7;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Hashtags";
+            // 
+            // txtHashtag
+            // 
+            txtHashtag.Location = new Point(6, 136);
+            txtHashtag.Name = "txtHashtag";
+            txtHashtag.Size = new Size(194, 27);
+            txtHashtag.TabIndex = 6;
+            txtHashtag.Text = "#";
+            // 
+            // ltxHashtags
+            // 
+            ltxHashtags.FormattingEnabled = true;
+            ltxHashtags.ItemHeight = 20;
+            ltxHashtags.Location = new Point(6, 26);
+            ltxHashtags.Name = "ltxHashtags";
+            ltxHashtags.Size = new Size(194, 104);
+            ltxHashtags.TabIndex = 4;
+            // 
+            // btnDeleteHashtag
+            // 
+            btnDeleteHashtag.ForeColor = Color.DarkRed;
+            btnDeleteHashtag.Location = new Point(106, 169);
+            btnDeleteHashtag.Name = "btnDeleteHashtag";
+            btnDeleteHashtag.Size = new Size(94, 29);
+            btnDeleteHashtag.TabIndex = 2;
+            btnDeleteHashtag.Text = "Delete";
+            btnDeleteHashtag.UseVisualStyleBackColor = true;
+            btnDeleteHashtag.Click += btnDeleteHashtag_Click;
+            // 
+            // btnAddHashtag
+            // 
+            btnAddHashtag.ForeColor = Color.ForestGreen;
+            btnAddHashtag.Location = new Point(6, 169);
+            btnAddHashtag.Name = "btnAddHashtag";
+            btnAddHashtag.Size = new Size(94, 29);
+            btnAddHashtag.TabIndex = 2;
+            btnAddHashtag.Text = "Add";
+            btnAddHashtag.UseVisualStyleBackColor = true;
+            btnAddHashtag.Click += btnAddHashtag_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(785, 364);
+            ClientSize = new Size(785, 433);
+            Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(toolStrip1);
             Controls.Add(btnStop);
@@ -164,6 +223,8 @@
             toolStrip1.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -180,5 +241,10 @@
         private TextBox txtChat;
         private Button btnDeleteChat;
         private Button btnAddChat;
+        private GroupBox groupBox2;
+        private TextBox txtHashtag;
+        private ListBox ltxHashtags;
+        private Button btnDeleteHashtag;
+        private Button btnAddHashtag;
     }
 }

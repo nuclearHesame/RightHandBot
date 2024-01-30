@@ -6,6 +6,7 @@ namespace RightHandBot.Models
     {
         public List<Bot> Bots { get; set; }
         public List<string> Memberships { get; set; }
+        public List<string> Hashtags { get; set; }
     }
 
     public class Bot

@@ -19,18 +19,29 @@ namespace RightHandBot
         private CancellationTokenSource cancellationTokenSource;
         Settings settings;
 
+        string SelectedChannel = "";
+        string SelectedHashtag = "";
+        int audioMessageId = 0;
+
+        #region forming
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            settings = (Settings) Serializer.ReadJson("Settings");
+            settings = (Settings)Serializer.ReadJson("Settings");
 
             cmxToken.Items.AddRange(settings.Bots.Select(bot => bot.APIToken).ToArray());
             ltxChatMemberShip.Items.AddRange(settings.Memberships.ToArray());
+            ltxHashtags.Items.AddRange(settings.Hashtags.ToArray());
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             cancellationTokenSource?.Cancel();
         }
+
+        #endregion
+
+        #region Buttons
 
         private void btnStart_Click(object sender, EventArgs e)
         {
@@ -40,6 +51,9 @@ namespace RightHandBot
                 cancellationTokenSource = new CancellationTokenSource();
                 Thread BotThread = new Thread(() => RunBot(cancellationTokenSource.Token));
                 BotThread.Start();
+
+                btnStart.Enabled = false;
+                btnStop.Enabled = true;
             }
             else
             {
@@ -52,7 +66,12 @@ namespace RightHandBot
             cancellationTokenSource?.Cancel();
             lblStatus.Text = "offline";
             lblStatus.ForeColor = System.Drawing.Color.Red;
+
+            btnStart.Enabled = true;
+            btnStop.Enabled = false;
         }
+
+        #endregion
 
         void UpdateTokens(string botName, string token)
         {
@@ -92,84 +111,117 @@ namespace RightHandBot
                 {
                     offset = Command.Id + 1;
 
-                    if (Command.Message == null)
-                        continue;
+                    string Id = Command.Id.ToString();
 
 
-                    string id = Command.Id.ToString();
-
-                    string type = Command.Message.Type.ToString();
-                    int messageId = Command.Message.MessageId;
-                    string? command = Command.Message.Text?.ToLower();
-                    //DateTime dateTime = Command.Message.Date.ToString("yyyy/MM/dd - HH:mm");
-
-                    string senderName = Command.Message.Chat.FirstName + Command.Message.Chat.LastName;
-                    string? senderUsername = Command.Message.Chat.Username.ToString();
-                    string chatID = Command.Message.Chat.Id.ToString();
-
-                    if (type == "Text")
+                    if (Command.CallbackQuery != null)
                     {
-                        switch (command)
+                        string id = Command.CallbackQuery.Id.ToString();
+                        string? data = Command.CallbackQuery.Data.ToString();
+                        string dateTime = Command.CallbackQuery.Message.Date.ToString("yyyy/MM/dd - HH:mm");
+
+                        string name = Command.CallbackQuery.From.FirstName.ToString();
+                        string chatId = Command.CallbackQuery.From.Id.ToString();
+                        string username = Command.CallbackQuery.From.Username.ToString();
+
+                        //selected channel
+                        if (settings.Memberships.Any(channel => channel == data))
                         {
-                            case "/start":
-                                {
-                                    StringBuilder sb = new();
-                                    sb.Append("Hello there *").Append(senderName).Append("*✨");
-                                    sb.Append("\n\n");
-                                    sb.Append("How i can Help You⁉️");
-                                    Bot.SendTextMessageAsync(chatID, sb.ToString(), parseMode: Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
-                                }
-                                break;
-                            case "/memberships":
-                                {
-                                    //member
-                                }
-                                break;
-                            default:
-                                {
+                            SelectedChannel = data;
 
-                                }
-                                break;
-                        }
-                    }
-                    else if (type == "Audio")
-                    {
-                        InlineKeyboardMarkup vote = new InlineKeyboardMarkup(new[]
-                        {
-                            new[]
+                            int buttonCount = settings.Hashtags.Count;
+
+                            var buttons = new InlineKeyboardButton[buttonCount][];
+                            for (int i = 0; i < buttonCount; i++)
                             {
-                                new InlineKeyboardButton("VoteKeyboardButton")
+                                buttons[i] = new[]
                                 {
-
-                                }
-                            },
-                            new[]
-                            {
-                                new InlineKeyboardButton("VoteKeyboardButton")
-                                {
-
-                                }
-                            },
-                            new[]
-                            {
-                                new InlineKeyboardButton("VoteKeyboardButton")
-                                {
-
-                                }
+                                    InlineKeyboardButton.WithCallbackData(settings.Hashtags[i], settings.Hashtags[i]),
+                                };
                             }
-                        });
 
-                        //Bot.SendTextMessageAsync(ChatID, "Enter:", replyMarkup: vote);
+                            var hashtag = new InlineKeyboardMarkup(buttons);
+
+                            Bot.DeleteMessageAsync(chatId,audioMessageId+1);
+                            Bot.SendTextMessageAsync(chatId, "Select the Hashtag you want:", replyMarkup: hashtag);
+                        }
+                        else if(settings.Hashtags.Any(hashtag => hashtag == data))
+                        {
+                            StringBuilder sb = new();
+                            sb.AppendLine(data);
+                            sb.AppendLine("");
+                            sb.AppendLine(SelectedChannel);
+
+                            Bot.EditMessageCaptionAsync(chatId,audioMessageId,sb.ToString());
+                            Bot.ForwardMessageAsync(SelectedChannel,chatId,audioMessageId);
+                        }
+
                     }
 
+                    if (Command.Message != null)
+                    {
+                        int messageId = Command.Message.MessageId;
+                        string type = Command.Message.Type.ToString();
+                        string? command = Command.Message.Text?.ToLower();
+                        string dateTime = Command.Message.Date.ToString("yyyy/MM/dd - HH:mm");
 
+                        string chatID = Command.Message.Chat.Id.ToString();
+                        string name = Command.Message.Chat.FirstName;
+                        string? username = Command.Message.Chat.Username.ToString();
+
+
+                        if (type == "Text")
+                        {
+                            switch (command)
+                            {
+                                case "/start":
+                                    {
+                                        StringBuilder sb = new();
+                                        sb.Append("Hello there *").Append(name).Append("*✨");
+                                        sb.Append("\n\n");
+                                        sb.Append("How i can Help You⁉️");
+                                        Bot.SendTextMessageAsync(chatID, sb.ToString(), parseMode: Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                                    }
+                                    break;
+                                case "/memberships":
+                                    {
+                                        //member
+                                    }
+                                    break;
+                                default:
+                                    {
+
+                                    }
+                                    break;
+                            }
+                        }
+                        else if (type == "Audio")
+                        {
+                            int buttonCount = settings.Memberships.Count;
+
+                            var buttons = new InlineKeyboardButton[buttonCount][];
+                            for (int i = 0; i < buttonCount; i++)
+                            {
+                                buttons[i] = new[]
+                                {
+                                InlineKeyboardButton.WithCallbackData(settings.Memberships[i], settings.Memberships[i]),
+                            };
+                            }
+
+                            var Channel = new InlineKeyboardMarkup(buttons);
+
+                            audioMessageId = messageId;
+                            Bot.SendTextMessageAsync(chatID, "Select the channel you want to send to.\n(The bot must be an administrator):", replyMarkup: Channel);
+                        }
+
+                    }
 
                 }
 
             }
         }
 
-        #region Chat
+        #region Chats
 
         private void btnAddChat_Click(object sender, EventArgs e)
         {
@@ -218,6 +270,53 @@ namespace RightHandBot
 
         #endregion
 
+        #region Hashtags
 
+        private void btnAddHashtag_Click(object sender, EventArgs e)
+        {
+            string hashtag = txtHashtag.Text.Trim();
+
+            if (hashtag.Length > 1)
+            {
+                if (hashtag.StartsWith("#"))
+                {
+                    txtHashtag.Text = "#";
+                    settings.Hashtags.Add(hashtag);
+                    ltxHashtags.Items.Add(hashtag);
+
+                    Serializer.WriteJson(settings);
+                }
+                else
+                {
+                    // message
+                }
+            }
+            else
+            {
+                // message
+            }
+        }
+
+        private void btnDeleteHashtag_Click(object sender, EventArgs e)
+        {
+            if (ltxHashtags.SelectedItem != null)
+            {
+                string? selectedItem = ltxHashtags.SelectedItem.ToString();
+
+                if (selectedItem != null)
+                {
+                    settings.Hashtags.Remove(selectedItem);
+                    ltxHashtags.Items.Remove(selectedItem);
+
+                    Serializer.WriteJson(settings);
+                }
+            }
+            else
+            {
+                // message
+            }
+        }
+
+        #endregion
     }
 }
